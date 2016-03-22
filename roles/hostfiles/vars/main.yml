@@ -1,0 +1,9 @@
+---
+ssh_host_key_types:
+  - rsa
+  - dsa
+  - ecdsa
+  - ed25519
+
+ssh_root_key_types:
+  - ed25519
