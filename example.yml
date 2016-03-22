@@ -7,3 +7,20 @@
   roles:
     - hostfiles
     - sshconf
+
+### Configure non-virtual machines first, as the virtual machines might not be available yet
+
+- name: Configure apt sources for non-virtual machines
+  hosts: all:!localhost:!vms
+  roles:
+    - apt
+
+
+# Further non-VM config goes here
+
+### Perform most of the actions above for the virtual machines that should be running now
+
+- name: Configure apt sources for virtual machines
+  hosts: vms
+  roles:
+    - apt

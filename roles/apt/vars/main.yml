@@ -1,0 +1,11 @@
+---
+debian_release: jessie
+
+debian_mirror: ftp.nl.debian.org/debian/
+
+debian_security: security.debian.org/
+
+debian_components:
+  - main
+  - contrib
+  - non-free

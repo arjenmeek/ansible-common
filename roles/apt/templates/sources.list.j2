@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+{% set mirror_url = 'http://' + apt_cache|default('') + debian_mirror %}
+{% set security_url = 'http://' + apt_cache|default('') + debian_security %}
+{% set components = debian_components|join(' ') %}
+
+deb {{ mirror_url }} {{ debian_release }} {{ components }}
+deb-src {{ mirror_url }} {{ debian_release }} {{ components }}
+
+deb {{ security_url }} {{ debian_release }}/updates {{ components }}
+deb-src {{ security_url }} {{ debian_release }}/updates {{ components }}
+
+deb {{ mirror_url }} {{ debian_release }}-updates {{ components }}
+deb-src {{ mirror_url }} {{ debian_release }}-updates {{ components }}
+
+{% if enable_debian_backports is defined and enable_debian_backports %}
+deb {{ mirror_url }} {{ debian_release }}-backports {{ components }}
+deb-src {{ mirror_url }} {{ debian_release }}-backports {{ components }}
+{% endif %}
+
+{% if extra_apt_sources is defined %}
+{% for source in extra_apt_sources %}
+{{ source }}
+{% endfor %}
+{% endif %}
