@@ -1,0 +1,9 @@
+---
+# Example playbook, copy this and edit to your needs
+
+# Specify option ansible_connection=local for localhost to make this work as intended
+- name: Generate required local files
+  hosts: localhost
+  roles:
+    - hostfiles
+    - sshconf
