@@ -1,0 +1,11 @@
+#!/bin/bash
+
+export ANSIBLE_CONFIG=ansible.cfg
+
+echo "Running ansible-playbook ..."
+if test -f ./secure/available
+then
+    ansible-playbook -i hosts --extra-vars "secure_files_available=True" "$@"
+else
+    ansible-playbook -i hosts "$@"
+fi
