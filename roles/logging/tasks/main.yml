@@ -1,0 +1,11 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: Configure rsyslog
+  template: src=rsyslog.conf.j2 dest=/etc/rsyslog.conf
+  notify: restart_rsyslog
+
+- name: configure logrotate
+  template: src=logrotate.conf.j2 dest=/etc/logrotate.conf
