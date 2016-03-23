@@ -3,7 +3,7 @@
 
 {% for interface in interfaces %}
 {% if interface.network is defined and networks[interface.network].domain is defined %}
-{% if loop.index == 0 %}domain{% else %}search{% endif%} {{ networks[interface.network].domain }}
+{% if loop.first %}domain{% else %}search{% endif%} {{ networks[interface.network].domain }}
 {% endif %}
 {% endfor %}
 
