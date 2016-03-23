@@ -1,0 +1,32 @@
+---
+packages:
+  - acpid
+  - bc
+  - bind9-host
+  - bwm-ng
+  - cron
+  - dbus
+  - dnsutils
+  - git
+  - htop
+  - imagemagick
+  - iotop
+  - makepasswd
+  - man-db
+  - manpages
+  - mc
+  - mutt
+  - ncdu
+  - netcat
+  - net-tools
+  - ntp
+  - ntpdate
+  - psmisc
+  - screen
+  - sudo
+  - tcpdump
+  - unzip
+  - uptimed
+  - w3m
+  - wget
+  - whois

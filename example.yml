@@ -24,8 +24,6 @@
     - vmhost
     - vmhost_guests
 
-# Further non-VM config goes here
-
 ### Perform most of the actions above for the virtual machines that should be running now
 
 - name: Perform essential configuration for virtual machines
@@ -35,3 +33,8 @@
     - essential
     - networking
     - ssh
+
+- name: Perform base system configuration common to all servers
+  hosts: servers
+  roles:
+    - base
