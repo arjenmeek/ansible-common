@@ -22,8 +22,8 @@
 
 - name: set root authorized_keys
   authorized_key: user=root key="{{ item }}"
-  with_items: root_authorized_keys
-  when: root_authorized_keys is defined
+  with_items: "{{ root_authorized_keys }}"
+  when: "{{ root_authorized_keys is defined }}"
 
 - name: Set root user known_hosts
   lineinfile: dest="/root/.ssh/known_hosts" regexp="^{{ item }} " line="{{ item }} {{ lookup('file', './files/hosts/{{ item }}/ssh_host_ecdsa_key.pub') }}" create=yes

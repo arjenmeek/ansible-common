@@ -1,7 +1,7 @@
 ---
 - name: install packages
   apt: name={{ item }} state=present update_cache=no install_recommends=no
-  with_items: packages
+  with_items: "{{ packages }}"
 
 - name: Configure dummy module
   copy: content="options dummy numdummies=8\n" dest=/etc/modprobe.d/local.conf
