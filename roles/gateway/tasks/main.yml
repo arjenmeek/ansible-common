@@ -1,0 +1,13 @@
+---
+- name: create ferm config dir
+  file: path=/etc/ferm state=directory
+
+- name: configure ferm
+  template: src=ferm.conf.j2 dest=/etc/ferm/ferm.conf
+
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: packages
+
+- name: Enable IPv4 forwarding
+  sysctl: name=net.ipv4.ip_forward value=1
