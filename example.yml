@@ -15,6 +15,7 @@
   roles:
     - apt
     - essential
+    - networking
 
 
 # Further non-VM config goes here
@@ -26,3 +27,4 @@
   roles:
     - apt
     - essential
+    - networking

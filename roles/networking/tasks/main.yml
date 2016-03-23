@@ -1,0 +1,5 @@
+---
+- name: configure network interfaces
+  template: src=interfaces.j2 dest=/etc/network/interfaces
+
+# TODO: Automatically reload networking config

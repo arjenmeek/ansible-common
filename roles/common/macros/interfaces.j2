@@ -1,0 +1,51 @@
+{% macro gateway (interface) %}
+{% if interface.gateway is defined %}
+    gateway {{ interface.gateway }}
+{% elif interface.network is defined and networks[interface.network].master != inventory_hostname and networks[interface.network].gateway is defined %}
+    gateway {{ networks[interface.network].gateway }}
+{% endif %}
+{% endmacro -%}
+
+{% macro bridge_ports(interface) %}
+{% if interface.bridge_ports is defined %}
+    bridge_ports {{ interface.bridge_ports }}
+    bridge_maxwait 5
+{% endif %}
+{% endmacro -%}
+
+{% macro extra_ips(interface) %}
+{% if interface.extra_ips is defined %}
+{% for extra_ip in interface.extra_ips %}
+    up ip addr add {{ extra_ip }} dev {{ interface.name }}
+    down ip addr del {{ extra_ip }} dev {{ interface.name }}
+{% endfor %}
+{% endif %}
+{% endmacro -%}
+
+{% macro routes(interface) %}
+{% if interface.routes is defined %}
+{% for route in interface.routes %}
+    up ip route add {{ route }} dev {{ interface.name }}
+    down ip route del {{ route }} dev {{ interface.name }}
+{% endfor %}
+{% endif %}
+{% endmacro -%}
+
+{% macro ipv6(interface) %}
+{% if interface.address6 is defined %}
+
+iface {{ interface.name }} inet6 static
+    address {{ interface.address6 }}
+{% if interface.gateway6 is defined %}
+    gateway {{ interface.gateway6 }}
+{% endif %}
+{% endif %}
+{% endmacro -%}
+
+{% macro interface_address(interface) %}
+{% if interface.address is defined %}
+{{ interface.address }}/{{ networks[interface.network].mask }}
+{% else %}
+{{ networks[interface.network].prefix + ipnum|string + '/' + networks[interface.network].mask|string }}
+{% endif %}
+{% endmacro -%}

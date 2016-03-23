@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+{% from "./roles/common/macros/interfaces.j2" import gateway, bridge_ports, extra_ips, routes, ipv6, interface_address with context %}
+
+auto lo
+iface lo inet loopback
+{% for interface in interfaces %}
+
+auto {{ interface.name }}
+{% if interface.address is defined or interface.network is defined %}
+iface {{ interface.name }} inet static
+    address {{ interface_address(interface) -}}
+{% else %}
+iface {{ interface.name }} inet manual
+{% endif %}
+{{ gateway(interface) -}}
+{% if interface.proxy_arp|default(False) %}
+    up echo 1 >/proc/sys/net/ipv4/conf/{{ interface.name }}/proxy_arp
+{% endif %}
+{{ bridge_ports(interface) -}}
+{{ extra_ips(interface) -}}
+{{ routes(interface) -}}
+{{ ipv6(interface) -}}
+{% endfor %}
