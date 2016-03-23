@@ -1,0 +1,12 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: configure snmpd
+  template: src=snmpd.conf.j2 dest=/etc/snmp/snmpd.conf
+  notify: restart_snmpd
+
+- name: set snmpd defaults file
+  copy: src=snmpd dest=/etc/default/snmpd
+  notify: restart_snmpd
