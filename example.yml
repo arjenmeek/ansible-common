@@ -18,6 +18,10 @@
     - networking
     - ssh
 
+- name: Set up VM host configuration
+  hosts: vmhosts
+  roles:
+    - vmhost
 
 # Further non-VM config goes here
 

@@ -1,0 +1,10 @@
+---
+packages:
+  - debootstrap
+  - extlinux
+  - libvirt-bin
+  - lvm2
+  - qemu-kvm
+  - virtinst
+  - virt-viewer
+  - xauth
