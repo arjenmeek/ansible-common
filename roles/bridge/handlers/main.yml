@@ -1,0 +1,3 @@
+---
+- name: reload_kernel_modules
+  command: /bin/systemctl restart kmod

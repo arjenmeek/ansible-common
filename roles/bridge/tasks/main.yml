@@ -1,0 +1,11 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: packages
+
+- name: Configure dummy module
+  copy: content="options dummy numdummies=8\n" dest=/etc/modprobe.d/local.conf
+
+- name: Enable dummy network interfaces
+  lineinfile: dest=/etc/modules line="dummy"
+  notify: reload_kernel_modules
