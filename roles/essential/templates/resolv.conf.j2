@@ -1,0 +1,12 @@
+#jinja2: lstrip_blocks: True
+{{ ansible_managed }}
+
+{% for interface in interfaces %}
+{% if interface.network is defined and networks[interface.network].domain is defined %}
+{% if loop.index == 0 %}domain{% else %}search{% endif%} {{ networks[interface.network].domain }}
+{% endif %}
+{% endfor %}
+
+{% for resolver in resolvers %}
+nameserver {{ resolver }}
+{% endfor %}

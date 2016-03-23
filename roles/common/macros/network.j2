@@ -1,0 +1,8 @@
+#jinja2: lstrip_blocks: True
+{% macro get_interface_address(host, interface) %}
+{% if interface.address is defined %}
+    {{- interface.address -}}
+{% else %}
+    {{- networks[interface.network].prefix + hostvars[host].ipnum|string -}}
+{% endif %}
+{% endmacro %}

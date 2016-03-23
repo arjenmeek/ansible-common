@@ -1,0 +1,10 @@
+---
+packages:
+  - aptitude
+  - iputils-ping
+  - less
+  - libpam-systemd
+  - locales
+  - openssh-server
+  - rsync
+  - vim
