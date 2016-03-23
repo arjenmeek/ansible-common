@@ -1,7 +1,7 @@
-{% macro gateway (interface) %}
+{% macro gateway (interface, host) %}
 {% if interface.gateway is defined %}
     gateway {{ interface.gateway }}
-{% elif interface.network is defined and networks[interface.network].master != inventory_hostname and networks[interface.network].gateway is defined %}
+{% elif interface.network is defined and networks[interface.network].master != host and networks[interface.network].gateway is defined %}
     gateway {{ networks[interface.network].gateway }}
 {% endif %}
 {% endmacro -%}
@@ -42,10 +42,10 @@ iface {{ interface.name }} inet6 static
 {% endif %}
 {% endmacro -%}
 
-{% macro interface_address(interface) %}
+{% macro interface_address(interface, host) %}
 {% if interface.address is defined %}
 {{ interface.address }}/{{ networks[interface.network].mask }}
 {% else %}
-{{ networks[interface.network].prefix + ipnum|string + '/' + networks[interface.network].mask|string }}
+{{ networks[interface.network].prefix + hostvars[host]['ipnum']|string + '/' + networks[interface.network].mask|string }}
 {% endif %}
 {% endmacro -%}

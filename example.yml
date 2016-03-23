@@ -22,6 +22,7 @@
   hosts: vmhosts
   roles:
     - vmhost
+    - vmhost_guests
 
 # Further non-VM config goes here
 

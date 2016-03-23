@@ -8,11 +8,11 @@ iface lo inet loopback
 auto {{ interface.name }}
 {% if interface.address is defined or interface.network is defined %}
 iface {{ interface.name }} inet static
-    address {{ interface_address(interface) -}}
+    address {{ interface_address(interface, inventory_hostname) -}}
 {% else %}
 iface {{ interface.name }} inet manual
 {% endif %}
-{{ gateway(interface) -}}
+{{ gateway(interface, inventory_hostname) -}}
 {% if interface.proxy_arp|default(False) %}
     up echo 1 >/proc/sys/net/ipv4/conf/{{ interface.name }}/proxy_arp
 {% endif %}

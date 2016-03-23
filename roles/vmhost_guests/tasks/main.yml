@@ -1,0 +1,34 @@
+---
+- name: create general purpose VM dir
+  file: path={{ vmpath }} state=directory
+
+- name: configure VMs in libvirt
+  template: src=vm.xml.j2 dest=/etc/libvirt/qemu/{{ item }}.xml
+  with_items: "{{ groups.vms }}"
+  when: "{{ hostvars[item]['parent'] == inventory_hostname }}"
+
+- name: use debootstrap to create VM template
+  command: debootstrap --variant=minbase --include='extlinux ifupdown linux-image-amd64 openssh-server python' {{ debian_release }} {{ vmpath }}/template '{{ debian_mirror }}'
+  args:
+    creates: "{{ vmpath }}/template/etc/apt/sources.list"
+
+- name: check which VM logical volumes already exist
+  stat: path=/dev/{{ inventory_hostname }}/{{ item }}
+  register: root_lvs
+  with_items: "{{ groups.vms }}"
+  when: "{{ hostvars[item]['parent'] == inventory_hostname }}"
+
+- name: determine which VMs need bootstrapping
+  set_fact: bootstrap_vms="{{ root_lvs.results|selectattr('stat', 'defined')|selectattr('stat.exists', 'equalto', False)|map(attribute='item')|list }}"
+
+- name: bootstrap each VM
+  include: bootstrap.yml
+  with_items: "{{ bootstrap_vms }}"
+
+- name: start VMs that were just bootstrapped
+  command: virsh create /etc/libvirt/qemu/{{ item }}.xml
+  with_items: "{{ bootstrap_vms }}"
+
+- name: wait for VMs to start
+  wait_for: port=22 host={{ networks[hostvars[item]['interfaces'][0].network].prefix + hostvars[item].ipnum|string }}
+  with_items: "{{ bootstrap_vms }}"

@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+{% from "./roles/common/macros/interfaces.j2" import gateway, bridge_ports, extra_ips, routes, ipv6, interface_address with context %}
+
+auto lo
+iface lo inet loopback
+{% for vinterface in hostvars[vm_name]['interfaces'] %}
+
+auto {{ vinterface.name }}
+{% if vinterface.address is defined or vinterface.network is defined %}
+iface {{ vinterface.name }} inet static
+    address {{ interface_address(vinterface, vm_name) -}}
+{% else %}
+iface {{ vinterface.name }} inet manual
+{% endif %}
+{{ gateway(vinterface, vm_name) -}}
+{% if vinterface.proxy_arp|default(False) %}
+    up echo 1 >/proc/sys/net/ipv4/conf/{{ vinterface.name }}/proxy_arp
+{% endif %}
+{{ bridge_ports(vinterface) -}}
+{{ extra_ips(vinterface) -}}
+{{ routes(vinterface) -}}
+{{ ipv6(vinterface) -}}
+{% endfor %}

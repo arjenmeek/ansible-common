@@ -1,0 +1,56 @@
+{% set hostname = item %}
+{% set hostinfo = hostvars[hostname] %}
+<domain type="kvm">
+  <name>{{ hostname }}</name>
+  <uuid>{{ lookup('file', './files/hosts/' ~ hostname ~'/vm_uuid') }}</uuid>
+  <memory>{{ hostinfo.memory * 1024 }}</memory>
+  <currentMemory>{{ hostinfo.memory * 1024 }}</currentMemory>
+  <vcpu>{{ hostinfo.cores }}</vcpu>
+  <os>
+    <type arch="x86_64">hvm</type>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode="host-model" />
+  <clock offset="utc">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="no"/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/kvm</emulator>
+    <disk type="block" device="disk">
+      <driver name="qemu" type="raw" cache="none" io="native"/>
+      <source dev="/dev/{{ inventory_hostname }}/{{ hostname }}"/>
+      <target dev="vda" bus="virtio"/>
+    </disk>
+{% if hostinfo.extra_volumes is defined %}
+{% for volume in hostinfo.extra_volumes %}
+    <disk type="block" device="disk">
+      <driver name="qemu" type="raw" cache="none" io="native"/>
+      <source dev="/dev/{{ volume.vg|default(inventory_hostname) }}/{{ volume.lv|default(hostname + '_' + volume.name) }}" />
+      <target dev="{{ volume.device }}" bus="virtio"/>
+    </disk>
+{% endfor %}
+{% endif %}
+{% for interface in hostinfo.interfaces %}
+    <interface type="bridge">
+      <source bridge="{{ networks[interface.network].bridge }}"/>
+      <model type="virtio" />
+    </interface>
+{% endfor %}
+    <input type="mouse" bus="ps2"/>
+    <graphics type="vnc" port="-1"/>
+    <console type="pty"/>
+    <video>
+      <model type="cirrus"/>
+    </video>
+  </devices>
+</domain>

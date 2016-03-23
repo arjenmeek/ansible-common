@@ -1,0 +1,6 @@
+/dev/vda / ext4 defaults 1 0
+{% if hostvars[vm_name].extra_volumes is defined %}
+{% for volume in hostvars[vm_name].extra_volumes %}
+/dev/{{ volume.device }} {{ volume.path }} ext4 defaults 0 0
+{% endfor %}
+{% endif %}
