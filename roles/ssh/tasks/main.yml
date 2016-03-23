@@ -1,0 +1,30 @@
+---
+# Currently doesn't actually install sshd yet
+
+- name: copy private host keys
+  copy: src=./secure/hosts/{{ inventory_hostname }}/ssh_host_{{ item }}_key dest=/etc/ssh/ssh_host_{{ item }}_key mode=0600
+  with_items: "{{ ssh_host_key_types }}"
+  when: "{{ secure_files_available|default(False) }}"
+  notify: restart_ssh
+
+- name: copy public host keys
+  copy: src=./files/hosts/{{ inventory_hostname }}/ssh_host_{{ item }}_key.pub dest=/etc/ssh/ssh_host_{{ item }}_key.pub
+  with_items: "{{ ssh_host_key_types }}"
+  when: "{{ secure_files_available|default(False) }}"
+  notify: restart_ssh
+
+- name: set global known_hosts
+  lineinfile: dest="/etc/ssh/ssh_known_hosts" regexp="^{{ item }} " line="{{ item }} {{ lookup('file', './files/hosts/{{ item }}/ssh_host_ecdsa_key.pub') }}" create=yes
+  with_items: "{{ groups.servers }}"
+
+- name: create root user SSH dir
+  file: path=/root/.ssh mode=0700 state=directory
+
+- name: set root authorized_keys
+  authorized_key: user=root key="{{ item }}"
+  with_items: root_authorized_keys
+  when: root_authorized_keys is defined
+
+- name: Set root user known_hosts
+  lineinfile: dest="/root/.ssh/known_hosts" regexp="^{{ item }} " line="{{ item }} {{ lookup('file', './files/hosts/{{ item }}/ssh_host_ecdsa_key.pub') }}" create=yes
+  with_items: "{{ groups.servers }}"

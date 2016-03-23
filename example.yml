@@ -16,6 +16,7 @@
     - apt
     - essential
     - networking
+    - ssh
 
 
 # Further non-VM config goes here
@@ -28,3 +29,4 @@
     - apt
     - essential
     - networking
+    - ssh
