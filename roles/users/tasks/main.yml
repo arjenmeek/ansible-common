@@ -1,0 +1,13 @@
+---
+- name: create user-specific groups
+  group: name={{ item }} gid={{ users[item].uid }} state=present
+  with_items: "{{ enabled_users }}"
+
+- name: create users
+  user: name={{ item }} uid={{ users[item].uid }} group={{ item }} groups={{ users[item].groups|default('') }} password={{ users[item].password }} shell=/bin/bash append=yes state=present
+  with_items: "{{ enabled_users }}"
+
+- name: set authorized_keys
+  authorized_key: user={{ item }} key="{{ users[item].ssh_key }}"
+  with_items: "{{ enabled_users }}"
+  when: users[item].ssh_key is defined and not nfs_home

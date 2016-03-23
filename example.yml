@@ -34,7 +34,10 @@
     - networking
     - ssh
 
+### Further configuration
+
 - name: Perform base system configuration common to all servers
   hosts: servers
   roles:
     - base
+    - users
