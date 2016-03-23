@@ -1,5 +1,5 @@
 #jinja2: lstrip_blocks: True
-{{ ansible_managed }}
+# {{ ansible_managed }}
 
 {% for interface in interfaces %}
 {% if interface.network is defined and networks[interface.network].domain is defined %}
