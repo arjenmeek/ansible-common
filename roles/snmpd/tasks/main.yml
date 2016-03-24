@@ -8,5 +8,5 @@
   notify: restart_snmpd
 
 - name: set snmpd defaults file
-  copy: src=snmpd dest=/etc/default/snmpd
+  template: src=default_snmpd.j2 dest=/etc/default/snmpd
   notify: restart_snmpd
