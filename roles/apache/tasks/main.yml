@@ -1,0 +1,28 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+  notify: restart_apache
+
+- name: copy site files
+  copy: src=./files/apache/sites/{{ item }}.conf dest=/etc/apache2/sites-available/{{ item }}.conf
+  with_items: "{{ apache_sites_enabled|default([]) }}"
+  notify: restart_apache
+
+- name: enable sites
+  file: src=../sites-available/{{ item }}.conf path=/etc/apache2/sites-enabled/{{ item }}.conf state=link
+  with_items: "{{ apache_sites_enabled|default([]) }}"
+  notify: restart_apache
+
+- name: disable sites
+  file: path=/etc/apache2/sites-enabled/{{ item }}.conf state=absent
+  with_items: "{{ apache_sites_disabled|default([]) }}"
+  notify: restart_apache
+
+- name: copy config for full access log
+  copy: src=fulllog.conf dest=/etc/apache2/conf-available/fulllog.conf
+  notify: restart_apache
+
+- name: enable full access log
+  file: src=../conf-available/fulllog.conf path=/etc/apache2/conf-enabled/fulllog.conf state=link
+  notify: restart_apache

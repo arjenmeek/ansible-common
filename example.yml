@@ -42,3 +42,10 @@
     - base
     - users
     - snmpd
+
+### Specific services
+
+- name: Webservers
+  hosts: webservers
+  roles:
+    - apache
