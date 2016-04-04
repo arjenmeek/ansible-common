@@ -4,6 +4,7 @@
 auto lo
 iface lo inet loopback
 {% for interface in interfaces %}
+{% if interface.ignore is not defined or not interface.ignore %}
 
 auto {{ interface.name }}
 {% if interface.address is defined or interface.network is defined %}
@@ -20,4 +21,5 @@ iface {{ interface.name }} inet manual
 {{ extra_ips(interface) -}}
 {{ routes(interface) -}}
 {{ ipv6(interface) -}}
+{% endif %}
 {% endfor %}
