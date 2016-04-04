@@ -6,6 +6,6 @@ table filter {
 
 table nat {
         chain POSTROUTING {
-                saddr 10.0.0.0/8 outerface eth1 SNAT to {{ snat_ip }};
+                saddr 10.0.0.0/8 outerface {{ ext_if|default('eth1') }} SNAT to {{ snat_ip }};
         }
 }
