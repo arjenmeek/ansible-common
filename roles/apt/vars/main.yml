@@ -1,5 +1,5 @@
 ---
-debian_release: jessie
+default_debian_release: jessie
 
 debian_mirror: ftp.nl.debian.org/debian/
 
