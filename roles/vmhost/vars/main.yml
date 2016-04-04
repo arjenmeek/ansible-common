@@ -6,5 +6,6 @@ packages:
   - lvm2
   - qemu-kvm
   - virtinst
+  - virt-top
   - virt-viewer
   - xauth
