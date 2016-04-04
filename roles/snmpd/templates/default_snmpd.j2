@@ -9,4 +9,4 @@ SNMPDRUN=yes
 
 # snmpd options (use syslog, close stdin/out/err).
 # debian default: SNMPDOPTS='-Lsd -Lf /dev/null -u snmp -g snmp -I -smux,mteTrigger,mteTriggerConf -p /run/snmpd.pid'
-SNMPDOPTS='-LSwd -Lf /dev/null -u snmp -g snmp -I -{% if inventory_hostname not in groups.dellservers %}smux,{% endif %}mteTrigger,mteTriggerConf -p /run/snmpd.pid'
+SNMPDOPTS='-LSwd -Lf /dev/null -u snmp -g snmp -I -{% if inventory_hostname not in groups.dellservers|default([]) %}smux,{% endif %}mteTrigger,mteTriggerConf -p /run/snmpd.pid'
