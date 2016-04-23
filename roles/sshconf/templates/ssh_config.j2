@@ -1,4 +1,4 @@
-{% for host in groups.servers %}
+{% for host in groups.servers + groups.desktops %}
 {% set hv = hostvars[host] %}
 Host {{ host }}
     User root
