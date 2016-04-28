@@ -9,7 +9,9 @@
 - name: Create ./secure/hosts directories
   file: dest=./secure/hosts/{{ item }} state=directory
   with_items: "{{ groups.all }}"
-  when: "{{ secure_files_available|default(False) and item != 'localhost' }}"
+  when: "{{ item != 'localhost' }}"
+  tags:
+    - secure_files
 
 # TODO: Figure out a more portable way to create a random UUID
 - name: Create VM UUIDs
@@ -27,25 +29,33 @@
   with_nested:
     - "{{ groups.all }}"
     - "{{ ssh_host_key_types }}"
-  when: "{{ secure_files_available|default(False) and item[0] != 'localhost' }}"
+  when: "{{ item[0] != 'localhost' }}"
+  tags:
+    - secure_files
 
 - name: Move generated SSH public host keys
   command: mv ./secure/hosts/{{ item[0] }}/ssh_host_{{ item[1] }}_key.pub ./files/hosts/{{ item[0] }}/ssh_host_{{ item[1] }}_key.pub creates="./files/hosts/{{ item[0] }}/ssh_host_{{ item[1] }}_key.pub"
   with_nested:
     - "{{ groups.all }}"
     - "{{ ssh_host_key_types }}"
-  when: "{{ secure_files_available|default(False) and item[0] != 'localhost' }}"
+  when: "{{ item[0] != 'localhost' }}"
+  tags:
+    - secure_files
 
 - name: Generate SSH root account keys
   command: ssh-keygen -q -f ./secure/hosts/{{ item[0] }}/id_{{ item[1] }} -N '' -t {{ item[1] }} -C root@{{ item[0] }} creates="./secure/hosts/{{ item[0] }}/id_{{ item[1] }}"
   with_nested:
     - "{{ groups.all }}"
     - "{{ ssh_root_key_types }}"
-  when: "{{ secure_files_available|default(False) and item[0] != 'localhost' }}"
+  when: "{{ item[0] != 'localhost' }}"
+  tags:
+    - secure_files
 
 - name: Move generated SSH public root account keys
   command: mv ./secure/hosts/{{ item[0] }}/id_{{ item[1] }}.pub ./files/hosts/{{ item[0] }}/id_{{ item[1] }}.pub creates="./files/hosts/{{ item[0] }}/id_{{ item[1] }}.pub"
   with_nested:
     - "{{ groups.all }}"
     - "{{ ssh_root_key_types }}"
-  when: "{{ secure_files_available|default(False) and item[0] != 'localhost' }}"
+  when: "{{ item[0] != 'localhost' }}"
+  tags:
+    - secure_files

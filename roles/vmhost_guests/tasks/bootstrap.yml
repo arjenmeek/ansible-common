@@ -37,12 +37,14 @@
 - name: copy private host keys
   copy: src=./secure/hosts/{{ vm_name }}/ssh_host_{{ item }}_key dest={{ vm_mountpoint }}/etc/ssh/ssh_host_{{ item }}_key mode=0600
   with_items: "{{ ssh_host_key_types }}"
-  when: "{{ secure_files_available|default(False) }}"
+  tags:
+    - secure_files
 
 - name: copy public host keys
   copy: src=./files/hosts/{{ vm_name }}/ssh_host_{{ item }}_key.pub dest={{ vm_mountpoint }}/etc/ssh/ssh_host_{{ item }}_key.pub
   with_items: "{{ ssh_host_key_types }}"
-  when: "{{ secure_files_available|default(False) }}"
+  tags:
+    - secure_files
 
 - name: create VM root user SSH dir
   file: path={{ vm_mountpoint }}/root/.ssh state=directory mode=700
