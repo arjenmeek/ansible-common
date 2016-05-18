@@ -16,8 +16,8 @@
 {% macro extra_ips(interface) %}
 {% if interface.extra_ips is defined %}
 {% for extra_ip in interface.extra_ips %}
-    up ip addr add {{ extra_ip }} dev {{ interface.name }}
-    down ip addr del {{ extra_ip }} dev {{ interface.name }}
+    up ip addr add {{ extra_ip }}/32 dev {{ interface.name }}
+    down ip addr del {{ extra_ip }}/32 dev {{ interface.name }}
 {% endfor %}
 {% endif %}
 {% endmacro -%}
