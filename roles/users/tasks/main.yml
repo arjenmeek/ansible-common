@@ -1,13 +1,29 @@
 ---
 - name: create user-specific groups
   group: name={{ item }} gid={{ users[item].uid }} state=present
-  with_items: "{{ enabled_users }}"
+  with_items: "{{ enabled_users|default([]) }}"
 
 - name: create users
-  user: name={{ item }} uid={{ users[item].uid }} group={{ item }} groups={{ users[item].groups|default('') }} password={{ users[item].password }} shell=/bin/bash append=yes state=present
-  with_items: "{{ enabled_users }}"
+  user: name={{ item }} uid={{ users[item].uid }} group={{ item }} groups={{ users[item].groups|default('') }} createhome={{ not nfs_home }} password={{ users[item].password }} shell=/bin/bash append=yes state=present
+  with_items: "{{ enabled_users|default([]) }}"
+
+- name: delete users
+  user: name={{ item }} state=absent
+  with_items: "{{ delete_users|default([]) }}"
+
+- name: delete user-specific groups
+  group: name={{ item }} state=absent
+  with_items: "{{ delete_users|default([]) }}"
 
 - name: set authorized_keys
   authorized_key: user={{ item }} key="{{ users[item].ssh_key }}"
-  with_items: "{{ enabled_users }}"
+  with_items: "{{ enabled_users|default([]) }}"
   when: users[item].ssh_key is defined and not nfs_home
+
+- name: set extra authorized_keys
+  authorized_key: user="{{ item.0.name }}" key="{{ item.1 }}"
+  with_subelements:
+    - "{{ extra_ssh_keys|default([]) }}"
+    - keys
+    - ignore_missing: True
+  when: "{{ not nfs_home }}"
