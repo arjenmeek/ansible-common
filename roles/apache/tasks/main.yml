@@ -14,6 +14,10 @@
   with_items: "{{ apache_sites_enabled|default([]) }}"
   notify: restart_apache
 
+- name: generate site files from templates
+  template: src=site_{{ item.value.template }}.j2 dest=/etc/apache2/sites-available/{{ item.key }}.conf
+  with_dict: "{{ apache_sites }}"
+
 - name: disable sites
   file: path=/etc/apache2/sites-enabled/{{ item }}.conf state=absent
   with_items: "{{ apache_sites_disabled|default([]) }}"
