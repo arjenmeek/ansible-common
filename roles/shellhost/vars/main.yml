@@ -1,0 +1,24 @@
+---
+packages:
+  - bitlbee
+  - build-essential
+  - ecryptfs-utils
+  - gnupg
+  - irssi
+  - irssi-scripts
+  - libsasl2-modules
+  - lmodern
+  - mosh
+  - mutt
+  - pandoc
+  - pass
+  - texlive
+  - python-dev
+  - python-pip
+  - python-virtualenv
+  - python3
+  - python3-venv
+  - sqlite3
+  - task
+  - tmux
+  - unison
