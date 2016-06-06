@@ -1,0 +1,10 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: set lightdm as default WM
+  copy: content="/usr/sbin/lightdm" dest="/etc/X11/default-display-manager"
+
+- name: set xterm as default terminal emulator
+  alternatives: name=x-terminal-emulator path=/usr/bin/lxterm
