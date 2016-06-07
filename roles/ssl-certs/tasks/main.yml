@@ -12,14 +12,20 @@
 - name: Copy needed certs
   copy: src=./secure/ssl/certs/{{ item.value.year }}/{{ item.key }}.crt dest=/etc/opt/ssl/certs/{{ item.key }}.crt
   with_dict: "{{ ssl_certs_enabled | default({}) }}"
+  tags:
+    - secure_files
 
 - name: Copy needed cert CA bundles
   copy: src=./secure/ssl/certs/{{ item.value.bundle }}.ca-bundle dest=/etc/opt/ssl/certs/{{ item.key }}.ca-bundle
   with_dict: "{{ ssl_certs_enabled | default({}) }}"
+  tags:
+    - secure_files
 
 - name: Copy needed private keys
   copy: src=./secure/ssl/private/{{ item.value.year }}/{{ item.key }}.key dest=/etc/opt/ssl/private/{{ item.key }}.key
   with_dict: "{{ ssl_certs_enabled | default({}) }}"
+  tags:
+    - secure_files
 
 - name: Delete disabled certs
   file: path=/etc/opt/ssl/certs/{{ item }}.crt state=absent
