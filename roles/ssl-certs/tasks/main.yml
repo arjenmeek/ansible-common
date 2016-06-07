@@ -1,0 +1,34 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: Create public cert dir
+  file: path=/etc/opt/ssl/certs state=directory
+
+- name: Create private cert dir
+  file: path=/etc/opt/ssl/private state=directory mode=0700 owner=root group=root
+
+- name: Copy needed certs
+  copy: src=./secure/ssl/certs/{{ item.value.year }}/{{ item.key }}.crt dest=/etc/opt/ssl/certs/{{ item.key }}.crt
+  with_dict: "{{ ssl_certs_enabled | default({}) }}"
+
+- name: Copy needed cert CA bundles
+  copy: src=./secure/ssl/certs/{{ item.value.bundle }}.ca-bundle dest=/etc/opt/ssl/certs/{{ item.key }}.ca-bundle
+  with_dict: "{{ ssl_certs_enabled | default({}) }}"
+
+- name: Copy needed private keys
+  copy: src=./secure/ssl/private/{{ item.value.year }}/{{ item.key }}.key dest=/etc/opt/ssl/private/{{ item.key }}.key
+  with_dict: "{{ ssl_certs_enabled | default({}) }}"
+
+- name: Delete disabled certs
+  file: path=/etc/opt/ssl/certs/{{ item }}.crt state=absent
+  with_items: "{{ ssl_certs_disabled | default([]) }}"
+
+- name: Delete disabled cert CA bundles
+  file: path=/etc/opt/ssl/certs/{{ item }}.ca-bundle state=absent
+  with_items: "{{ ssl_certs_disabled | default([]) }}"
+
+- name: Delete disabled private keys
+  file: path=/etc/opt/ssl/private/{{ item }}.key state=absent
+  with_items: "{{ ssl_certs_disabled | default([]) }}"
