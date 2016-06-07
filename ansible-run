@@ -5,7 +5,7 @@ export ANSIBLE_CONFIG=ansible.cfg
 echo "Running ansible-playbook ..."
 if test -f ./secure/available
 then
-    ansible-playbook -i hosts --extra-vars "secure_files_available=True" "$@"
+    ansible-playbook -i hosts "$@"
 else
     ansible-playbook -i hosts --skip-tags "secure_files" "$@"
 fi
