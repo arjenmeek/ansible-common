@@ -1,0 +1,7 @@
+---
+packages:
+  - nvidia-xconfig
+
+kernel_packages:
+  - nvidia-driver
+  - linux-headers-amd64

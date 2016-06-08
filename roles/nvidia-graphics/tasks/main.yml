@@ -1,0 +1,10 @@
+---
+- name: install kernel-released packages
+  #apt: name={{ item }} state=present default_release={{ kernel_release|default('stable') }} update_cache=no install_recommends=no
+  apt: name={{ item }} state=present default_release=jessie-backports update_cache=yes install_recommends=no
+  with_items: "{{ kernel_packages }}"
+
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+  notify: regen_xconfig

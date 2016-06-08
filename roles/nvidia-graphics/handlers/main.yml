@@ -1,0 +1,3 @@
+---
+- name: regen_xconfig
+  command: "nvidia-xconfig -c /etc/X11/xorg.conf"
