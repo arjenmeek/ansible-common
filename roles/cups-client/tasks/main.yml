@@ -1,0 +1,10 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: create CUPS config dir
+  file: dest=/etc/cups state=directory
+
+- name: configure CUPS client
+  template: src=client.conf.j2 dest=/etc/cups/client.conf

@@ -1,0 +1,4 @@
+---
+packages:
+  - cups-client
+  - cups-bsd
