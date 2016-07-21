@@ -1,0 +1,20 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: Create lsyncd config dir
+  file: path=/etc/lsyncd state=directory
+
+- name: Create lsyncd log dir
+  file: path=/var/log/lsyncd state=directory
+
+- name: Config lsyncd
+  template: src=lsyncd.conf.lua.j2 dest=/etc/lsyncd/lsyncd.conf.lua
+  notify: restart_lsyncd
+
+- name: Config csync2
+  template: src=csync2.cfg.j2 dest=/etc/csync2.cfg
+
+- name: Copy csync2 preshared key
+  copy: src=./secure/groups/{{ csync2_hostgroup }}/csync2_key dest=/etc/csync2.key_{{ csync2_hostgroup }} mode=0600
