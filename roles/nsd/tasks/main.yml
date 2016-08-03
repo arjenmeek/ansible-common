@@ -1,0 +1,12 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: transfer NSD zones
+  copy: src=./files/nsd/zones/ dest=/etc/nsd/zones/
+  notify: restart_nsd
+
+- name: config NSD
+  template: src=nsd.conf.j2 dest=/etc/nsd/nsd.conf
+  notify: restart_nsd

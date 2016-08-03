@@ -1,0 +1,9 @@
+server:
+    ip-address: {{ public_ip }}
+
+{% for zone in nsd_zones %}
+zone:
+    name: "{{ zone }}"
+    zonefile: "zones/{{ zone }}.zone"
+
+{% endfor %}
