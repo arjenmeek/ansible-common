@@ -1,0 +1,13 @@
+---
+packages:
+  - nagios3
+  - nagios-snmp-plugins
+  - monitoring-plugins
+  - snmp
+  - snmp-mibs-downloader
+
+nagios_delete_conffiles:
+  - extinfo_nagios2.cfg
+  - hostgroups_nagios2.cfg
+  - localhost_nagios2.cfg
+  - services_nagios2.cfg

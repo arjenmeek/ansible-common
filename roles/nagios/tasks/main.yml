@@ -1,0 +1,28 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: copy http access list
+  copy: src=./files/nagios/htpasswd.users dest=/etc/nagios3/htpasswd.users
+
+- name: configure nagios
+  template: src=generated.cfg.j2 dest=/etc/nagios3/conf.d/generated.cfg
+  notify: restart_nagios
+
+- name: configure nagios CGI
+  template: src=cgi.cfg.j2 dest=/etc/nagios3/cgi.cfg
+  notify: restart_nagios
+
+- name: configure nagios snmp plugin
+  copy: src=snmp.cfg dest=/etc/nagios-plugins/config/snmp.cfg
+  notify: restart_nagios
+
+- name: configure nagios snmp_mem plugin
+  copy: src=snmp_mem.cfg dest=/etc/nagios-plugins/config/snmp_mem.cfg
+  notify: restart_nagios
+
+- name: delete some default nagios conf.d files
+  file: path=/etc/nagios3/conf.d/{{ item }} state=absent
+  with_items: "{{ nagios_delete_conffiles }}"
+  notify: restart_nagios
