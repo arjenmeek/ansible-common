@@ -1,0 +1,8 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: configure NFS exports
+  template: src=exports.j2 dest=/etc/exports
+  notify: reload_exports

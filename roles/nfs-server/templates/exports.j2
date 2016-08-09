@@ -1,0 +1,6 @@
+{{ nfs_export_base }}{% for subnet in nfs_allow_subnets %} {{ subnet }}(rw,sync,fsid=0,nohide,no_root_squash,no_subtree_check){% endfor %}
+
+{% for volume in nfs_export_volumes %}
+{{ volume }} {% for subnet in nfs_allow_subnets %} {{ subnet }}(rw,sync,nohide,no_root_squash,no_subtree_check){% endfor %}
+
+{% endfor %}
