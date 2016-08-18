@@ -1,0 +1,30 @@
+rsh: ssh
+xdev: 1
+index: none
+log: gzip
+meta-perm: 600
+image-default: %Y%m%d
+image-time: 16:00
+
+bank:
+        /srv/backup
+
+exclude:
+        .nfs*
+
+expire-default: +2 weeks
+expire-rule:
+#       MIN HR    DOM MON       DOW  STRFTIME_FMT
+        *   *     *   *         1    +2 months
+        *   *     1-7 *         1    +6 months
+        *   *     1-7 1,4,7,10  1    +1 year
+
+Runall:
+{% for host in (groups.vms + groups.vmhosts + groups.external_hosts)|sort %}
+    {{ host }}-root
+{% for vol in hostvars[host].extra_volumes|default([]) %}
+{% if vol.backup_exclude is not defined or not vol.backup_exclude %}
+    {{ host }}-{{ vol.name }}
+{% endif %}
+{% endfor %}
+{% endfor %}

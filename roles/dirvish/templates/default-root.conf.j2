@@ -1,0 +1,5 @@
+client: {{ hostvars[client_host]['dirvish_client']|default(client_host) }}
+tree: /
+{% if hostvars[client_host]['dirvish_rsh'] is defined %}
+rsh: {{ hostvars[client_host]['dirvish_rsh'] }}
+{% endif %}

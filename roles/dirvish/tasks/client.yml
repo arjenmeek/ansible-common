@@ -1,0 +1,18 @@
+---
+- set_fact: client_host={{ item }}
+
+- name: create root fs dirvish vault
+  file: path=/srv/backup/{{ client_host }}-root/dirvish state=directory
+
+- name: configure root fs dirvish vault
+  template: src=default-root.conf.j2 dest=/srv/backup/{{ client_host }}-root/dirvish/default.conf
+
+- name: create extra volumes dirvish vaults
+  file: path=/srv/backup/{{ client_host }}-{{ item.name }}/dirvish state=directory
+  with_items: "{{ hostvars[client_host]['extra_volumes'] | default([]) }}"
+  when: "{{ item.backup_exclude is not defined or not item.backup_exclude }}"
+
+- name: configure extra volumes dirvish vaults
+  template: src=default-volume.conf.j2 dest=/srv/backup/{{ client_host }}-{{ item.name }}/dirvish/default.conf
+  with_items: "{{ hostvars[client_host]['extra_volumes'] | default([]) }}"
+  when: "{{ item.backup_exclude is not defined or not item.backup_exclude }}"

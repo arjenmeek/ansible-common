@@ -1,0 +1,14 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: configure dirvish
+  template: src=master.conf.j2 dest=/etc/dirvish/master.conf
+
+- name: Configure dirvish for each client host
+  include: client.yml
+  with_items: "{{ groups.vms + groups.vmhosts + groups.external_hosts }}"
+
+- name: Set up dirvish cronjob
+  copy: content="20 2 * * * root /usr/sbin/dirvish-expire --quiet && /usr/sbin/dirvish-runall --quiet\n" dest=/etc/cron.d/dirvish
