@@ -1,0 +1,15 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+- name: configure rssh
+  template: src=rssh.conf.j2 dest=/etc/rssh.conf
+
+- name: create groups for RSSH users
+  group: name={{ item.name }} gid={{ item.gid }} state=present
+  with_items: "{{ rssh_users }}"
+
+- name: create users
+  user: name={{ item.name }} uid={{ item.uid }} group={{ item.name }} groups={{ item.groups|default('') }} createhome=no password={{ item.password }} home=/srv/home/{{ item.name }} shell=/usr/bin/rssh append=yes state=present
+  with_items: "{{ rssh_users }}"
