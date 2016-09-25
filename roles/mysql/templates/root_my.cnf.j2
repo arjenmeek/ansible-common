@@ -1,0 +1,4 @@
+[client]
+host=localhost
+user=root
+password={{ lookup('file', './secure/groups/{{ mirror_hostgroup }}/mysql_password_root') }}
