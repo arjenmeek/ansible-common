@@ -19,6 +19,7 @@
 [client]
 port		= 3306
 socket		= /var/run/mysqld/mysqld.sock
+default-character-set   = utf8
 
 # Here is entries for some specific programs
 # The following values assume you have at least 32M ram
@@ -41,6 +42,8 @@ datadir		= {{ mysql_datadir|default("/var/lib/mysql") }}
 tmpdir		= /tmp
 lc-messages-dir	= /usr/share/mysql
 skip-external-locking
+character-set-server    = utf8
+collation-server        = utf8_general_ci
 
 # Fulltext
 ft_min_word_len = 3
@@ -113,6 +116,9 @@ max_binlog_size = 512M
 #
 # InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
 # Read the manual for more InnoDB related options. There are many!
+innodb_file_per_table
+innodb_buffer_pool_size = 256MB
+
 #
 # * Security Features
 #
@@ -125,6 +131,7 @@ max_binlog_size = 512M
 # ssl-cert=/etc/mysql/server-cert.pem
 # ssl-key=/etc/mysql/server-key.pem
 
+default-storage-engine  = myisam
 
 
 [mysqldump]
