@@ -1,0 +1,9 @@
+---
+- apt: update_cache=yes
+
+- command: apt list --upgradable
+  register: out
+
+- debug: var=out.stdout_lines
+
+- local_action: copy content={{ out.stdout }} dest=./output/{{ inventory_hostname }}
