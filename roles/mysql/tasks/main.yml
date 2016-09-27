@@ -3,6 +3,12 @@
   apt: name={{ item }} state=present update_cache=no install_recommends=no
   with_items: "{{ packages }}"
 
+- name: create MySQL data directory
+  file: path="{{ mysql_datadir }}" state=directory owner=mysql group=mysql mode=0700
+
+- name: create MySQL binlog directory
+  file: path="/srv/mysql-binlog" state=directory owner=mysql group=mysql mode=0700
+
 - name: configure mysql
   template: src=my.cnf.j2 dest=/etc/mysql/my.cnf
   notify:
