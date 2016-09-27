@@ -1,0 +1,56 @@
+#!/usr/bin/env python3
+
+import os
+import re
+from os.path import join as pjoin
+from collections import defaultdict, namedtuple
+
+Upgrade = namedtuple('Upgrade', ['package', 'release', 'version', 'arch', 'old'])
+
+def read_package_info(info_dir, suppress_old_versions=False):
+
+    def p(name, sep=' '):
+        return '(?P<{0}>[^{1}]+){1}'.format(name, sep)
+
+    parts = (p('package', '/'), p('release'), p('version'), p('arch'), '\[upgradable from: ', p('old', '\]'), '$')
+    regex = re.compile(''.join(parts))
+
+    hostnames = sorted(os.listdir('./output'))
+    upgrades = defaultdict(set)
+
+    for hostname in hostnames:
+        with open(pjoin('./output', hostname), 'r') as f:
+            lines = [l.rstrip() for l in f.readlines() if not l.startswith('Listing...')]
+
+        for l in lines:
+            match = regex.match(l)
+            if suppress_old_versions:
+                u = Upgrade(*match.groups()[:4] + ('*',))
+            else:
+                u = Upgrade(*match.groups())
+            upgrades[u].add(hostname)
+
+    return hostnames, upgrades
+
+
+def print_upgrades(hostnames, upgrades):
+    hosts_tpl = '{:<7.7} ' * len(hostnames)
+    packages_tpl = '{0.package: <30} {0.arch: <8} {0.old} => {0.version}'
+    boolmap = {True: 'X', False: '-'}
+
+    def trunc(s):
+        if len(s) > 7:
+            return s[:3] + '~' + s[-3:]
+        else:
+            return s
+
+    headers = list(map(trunc, hostnames))
+    print(hosts_tpl.format(*headers))
+    print()
+
+    for upgrade, uhosts in sorted(upgrades.items()):
+        states = [boolmap[h in uhosts] for h in hostnames]
+        print(hosts_tpl.format(*states), packages_tpl.format(upgrade))
+
+
+print_upgrades(*read_package_info('./output', True))

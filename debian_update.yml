@@ -1,0 +1,6 @@
+---
+# Generate the ssh config before we do anything that actually uses SSH
+
+- hosts: all:!localhost:!openvz
+  roles:
+    - debian_update
