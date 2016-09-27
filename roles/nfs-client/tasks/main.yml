@@ -1,0 +1,8 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+
+#- name: configure idmapd
+#  template: src=idmapd.conf.j2 dest=/etc/idmapd.conf
+#  notify: restart_nfs_common

@@ -1,0 +1,3 @@
+---
+- name: restart_nfs_common
+  service: name=nfs-common state=restarted
