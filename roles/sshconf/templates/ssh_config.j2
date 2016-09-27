@@ -9,7 +9,7 @@ Host {{ host }}
     Hostname {{ hv['real_host'] }}
 {% endif %}
 {% if 'identity_file' in hv %}
-    IdentityFile ~/.ssh/id_{{ hv['identity_file'] }}
+    IdentityFile ssh_ids/id_{{ hv['identity_file'] }}
 {% endif %}
 
 {% endfor %}
