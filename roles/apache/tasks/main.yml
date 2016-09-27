@@ -18,6 +18,12 @@
   template: src=site_{{ item.value.template }}.j2 dest=/etc/apache2/sites-available/{{ item.key }}.conf
   with_dict: "{{ apache_sites }}"
 
+- name: enable template-generated sites
+  file: src=../sites-available/{{ item.key }}.conf path=/etc/apache2/sites-enabled/{{ item.key }}.conf state=link
+  notify: restart_apache
+  with_dict: "{{ apache_sites }}"
+  when: "{{ item.value.enabled }}"
+
 - name: disable sites
   file: path=/etc/apache2/sites-enabled/{{ item }}.conf state=absent
   with_items: "{{ apache_sites_disabled|default([]) }}"
