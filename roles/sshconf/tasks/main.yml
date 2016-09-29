@@ -10,3 +10,7 @@
   lineinfile: dest="./ssh_known_hosts" regexp="^{{ item }} " line="{{ item }} {{ lookup('file', './files/hosts/{{ item }}/ssh_host_ecdsa_key.pub') }}" create=yes
   with_items: "{{ groups.servers }}"
 
+- name: Set real hosts in local ssh_known_hosts
+  lineinfile: dest="./ssh_known_hosts" regexp="^{{ hostvars[item]['real_host'] }} " line="{{ hostvars[item]['real_host'] }} {{ lookup('file', './files/hosts/{{ item }}/ssh_host_ecdsa_key.pub') }}" create=yes
+  with_items: "{{ groups.servers }}"
+  when: "'real_host' in hostvars[item]"
