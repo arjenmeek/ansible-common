@@ -18,3 +18,5 @@
 
 - name: Copy csync2 preshared key
   copy: src=./secure/groups/{{ csync2_hostgroup }}/csync2_key dest=/etc/csync2.key_{{ csync2_hostgroup }} mode=0600
+  tags:
+    - secure_files
