@@ -16,6 +16,10 @@
 
 - name: set MySQL root password
   mysql_user: name=root check_implicit_admin=yes login_user=root login_password="{{ lookup('file', './secure/groups/{{ mirror_hostgroup }}/mysql_password_root') }}" password="{{ lookup('file', './secure/groups/{{ mirror_hostgroup }}/mysql_password_root') }}"
+  tags:
+    - secure_files
 
 - name: create /root/.my.cnf
   template: src=root_my.cnf.j2 dest=/root/.my.cnf mode=0600
+  tags:
+    - secure_files
