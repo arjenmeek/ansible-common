@@ -16,11 +16,11 @@
   command: mount /dev/{{ inventory_hostname }}/{{ vm_name }} {{ vm_mountpoint }}
 
 - name: create extra LVs
-  lvol: vg={{ inventory_hostname }} lv="{{ vm_name + '_' + item['name'] }}" size={{ item['size'] }}
+  lvol: vg={{ item['vg']|default(inventory_hostname) }} lv="{{ vm_name + '_' + item['name'] }}" size={{ item['size'] }}
   with_items: "{{ hostvars[vm_name]['extra_volumes'] }}"
 
 - name: format extra LVs
-  filesystem: fstype=ext4 dev="/dev/{{ inventory_hostname }}/{{ vm_name }}_{{ item.name }}"
+  filesystem: fstype=ext4 dev="/dev/{{ item['vg']|default(inventory_hostname) }}/{{ vm_name }}_{{ item.name }}"
   with_items: "{{ hostvars[vm_name]['extra_volumes'] }}"
 
 # TODO: Mount & unmount extra volumes
