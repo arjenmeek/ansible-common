@@ -3,5 +3,8 @@
   apt: name={{ item }} state=present update_cache=no install_recommends=no
   with_items: "{{ packages }}"
 
-- name: configure PHP (apache)
-  template: src=php.ini.j2 dest=/etc/php5/apache2/php.ini
+- name: configure PHP
+  template: src=php.ini.j2 dest=/etc/php5/{{ item }}/php.ini
+  with_items:
+    - apache2
+    - cli

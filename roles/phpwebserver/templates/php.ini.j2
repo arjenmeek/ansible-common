@@ -390,7 +390,11 @@ max_input_time = 120
 
 ; Maximum amount of memory a script may consume (128MB)
 ; http://php.net/memory-limit
+{% if item == 'cli' %}
+memory_limit = -1
+{% else %}
 memory_limit = 512M
+{% endif %}
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Error handling and logging ;
@@ -606,7 +610,11 @@ html_errors = Off
 ; Development Value: "GPCS"
 ; Production Value: "GPCS";
 ; http://php.net/variables-order
+{% if item == 'cli' or php_register_env|default(False) %}
+variables_order = "EGPCS"
+{% else %}
 variables_order = "GPCS"
+{% endif %}
 
 ; This directive determines which super global data (G,P & C) should be
 ; registered into the super global array REQUEST. If so, it also determines
@@ -676,7 +684,7 @@ default_mimetype = "text/html"
 
 ; PHP's default character set is set to UTF-8.
 ; http://php.net/default-charset
-default_charset = "UTF-8"
+default_charset = "{{ php_default_charset|default("UTF-8") }}"
 
 ; PHP internal character encoding is set to empty.
 ; If empty, default_charset is used.
@@ -806,7 +814,7 @@ file_uploads = On
 
 ; Maximum allowed size for uploaded files.
 ; http://php.net/upload-max-filesize
-upload_max_filesize = 16M
+upload_max_filesize = 16777216
 
 ; Maximum number of files that can be uploaded via a single request
 max_file_uploads = 50
