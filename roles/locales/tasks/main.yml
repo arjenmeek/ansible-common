@@ -1,0 +1,7 @@
+---
+- name: Set default locale
+  copy: content="LANG=en_US.UTF-8\n" dest="/etc/default/locale"
+
+- name: Configure locales
+  template: src=locale.gen.j2 dest=/etc/locale.gen mode=755
+  notify: generate_locales
