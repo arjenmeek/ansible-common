@@ -21,6 +21,13 @@
   tags:
     - secure_files
 
+- name: Create main cert + CA bundles where needed
+  copy: content="{{ lookup('file', './secure/ssl/certs/{{ item.value.year }}/{{ item.key }}.crt') }}\n{{ lookup('file', './secure/ssl/certs/{{ item.value.bundle }}.ca-bundle') }}" dest=/etc/opt/ssl/certs/{{ item.key }}.crt-bundle
+  with_dict: "{{ ssl_certs_enabled | default({}) }}"
+  when: "{{ item.value.create_bundle|default(False) }}"
+  tags:
+    - secure_files
+
 - name: Copy needed private keys
   copy: src=./secure/ssl/private/{{ item.value.year }}/{{ item.key }}.key dest=/etc/opt/ssl/private/{{ item.key }}.key
   with_dict: "{{ ssl_certs_enabled | default({}) }}"
