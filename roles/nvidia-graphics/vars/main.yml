@@ -5,3 +5,4 @@ packages:
 kernel_packages:
   - nvidia-driver
   - linux-headers-amd64
+  - linux-image-amd64
