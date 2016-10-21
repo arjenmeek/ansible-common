@@ -3,3 +3,6 @@ tree: {{ item.path }}
 {% if hostvars[client_host]['dirvish_rsh'] is defined %}
 rsh: {{ hostvars[client_host]['dirvish_rsh'] }}
 {% endif %}
+{% if hostvars[client_host]['mysqldump_path'] is defined and hostvars[client_host]['mysqldump_path'].startswith(item.path) %}
+pre-client: /opt/scripts/backup_all_mysql {{ hostvars[client_host]['mysqldump_path'] }}
+{% endif %}
