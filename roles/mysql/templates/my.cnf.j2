@@ -101,11 +101,10 @@ log_error = /var/log/mysql/error.log
 {% if mysql_replication_role is defined %}
 {% if mysql_replication_role == 'master' %}
 server-id = 1
-log_bin = /srv/mysql-binlog/mysql-bin.log
 {% else %}
 server-id = 2
-#log_bin = /srv/mysql-binlog/mysql-bin.log
 {% endif %}
+log_bin = /srv/mysql-binlog/mysql-bin.log
 {% endif %}
 expire_logs_days	= 10
 max_binlog_size = 512M

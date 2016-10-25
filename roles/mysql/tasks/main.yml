@@ -23,3 +23,8 @@
   template: src=root_my.cnf.j2 dest=/root/.my.cnf mode=0600
   tags:
     - secure_files
+
+- name: set MySQL replication password
+  mysql_user: name=replication host="%" password="{{ lookup('file', './secure/groups/{{ mirror_hostgroup }}/mysql_password_replication') }}" priv="*.*:REPLICATION SLAVE" state=present
+  tags:
+    - secure_files
