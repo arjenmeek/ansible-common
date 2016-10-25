@@ -15,6 +15,7 @@ packages:
   - man-db
   - manpages
   - mc
+  - moreutils
   - mutt
   - ncdu
   - netcat
