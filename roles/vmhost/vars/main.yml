@@ -8,4 +8,5 @@ packages:
   - virtinst
   - virt-top
   - virt-viewer
+  - vlan
   - xauth
