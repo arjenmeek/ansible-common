@@ -17,7 +17,7 @@ ff02::2     ip6-allrouters
 {% for host in groups.all %}
     {% if hostvars[host].interfaces is defined %}
         {% for host_interface in hostvars[host].interfaces %}
-            {% if host_interface.network is defined and networks[host_interface.network].domain == networks[interface.network].domain %}
+            {% if host_interface.network is defined and networks[host_interface.network].domain == networks[interface.network].domain and not ( host_interface.address is defined and not host_interface.address ) %}
                 {{- interface_hostline(host, host_interface) -}}
             {% endif %}
         {% endfor %}

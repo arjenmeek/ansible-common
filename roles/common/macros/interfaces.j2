@@ -1,7 +1,7 @@
 {% macro gateway (interface, host) %}
-{% if interface.gateway is defined %}
+{% if interface.gateway is defined and interface.gateway is not none %}
     gateway {{ interface.gateway }}
-{% elif interface.network is defined and networks[interface.network].master != host and networks[interface.network].gateway is defined %}
+{% elif interface.gateway is not defined and interface.network is defined and networks[interface.network].master != host and networks[interface.network].gateway is defined %}
     gateway {{ networks[interface.network].gateway }}
 {% endif %}
 {% endmacro -%}
@@ -24,6 +24,15 @@
     up ip addr add {{ extra_ip }}{{ extra_netmask }} dev {{ interface.name }}
     down ip addr del {{ extra_ip }}{{ extra_netmask }} dev {{ interface.name }}
 {% endfor %}
+{% endif %}
+{% endmacro -%}
+
+{% macro source_routing(interface) %}
+{% if interface.source_gateway is defined %}
+    post-up ip route add default via {{ interface.source_gateway }} dev {{ interface.name }} table {{ interface.table_id }}
+    post-up ip rule add from {{ interface.address }}/32 table {{ interface.table_id }}
+    pre-down ip rule del from {{ interface.address }}/32 table {{ interface.table_id }}
+    pre-down ip route del default via {{ interface.source_gateway }} dev {{ interface.name }} table {{ interface.table_id }}
 {% endif %}
 {% endmacro -%}
 

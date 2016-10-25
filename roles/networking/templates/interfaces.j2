@@ -1,5 +1,5 @@
 # {{ ansible_managed }}
-{% from "./roles/common/macros/interfaces.j2" import gateway, bridge_ports, extra_ips, routes, ipv6, interface_address with context %}
+{% from "./roles/common/macros/interfaces.j2" import gateway, bridge_ports, extra_ips, source_routing, routes, ipv6, interface_address with context %}
 
 auto lo
 iface lo inet loopback
@@ -7,11 +7,15 @@ iface lo inet loopback
 {% if interface.ignore is not defined or not interface.ignore %}
 
 auto {{ interface.name }}
-{% if interface.address is defined or interface.network is defined %}
+{% if (interface.address is defined or interface.network is defined) and not (interface.address is defined and not interface.address) %}
 iface {{ interface.name }} inet static
     address {{ interface_address(interface, inventory_hostname) -}}
 {% else %}
 iface {{ interface.name }} inet manual
+{% if interface.address is defined and not interface.address %}
+    pre-up ip link set {{ interface.name }} up
+    post-down ip link set {{ interface.name }} down
+{% endif %}
 {% endif %}
 {{ gateway(interface, inventory_hostname) -}}
 {% if interface.proxy_arp|default(False) %}
@@ -19,6 +23,7 @@ iface {{ interface.name }} inet manual
 {% endif %}
 {{ bridge_ports(interface) -}}
 {{ extra_ips(interface) -}}
+{{ source_routing(interface) -}}
 {{ routes(interface) -}}
 {{ ipv6(interface) -}}
 {% endif %}
