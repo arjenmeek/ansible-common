@@ -8,7 +8,7 @@
 
 - name: Configure dirvish for each client host
   include: client.yml
-  with_items: "{{ groups.vms + groups.vmhosts + groups.external_hosts }}"
+  with_items: "{{ groups[backup_hostgroup] }}"
 
 - name: Set up dirvish cronjob
   copy: content="20 2 * * * root /usr/sbin/dirvish-expire --quiet && /usr/sbin/dirvish-runall --quiet\n" dest=/etc/cron.d/dirvish
