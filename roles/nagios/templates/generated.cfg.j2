@@ -67,6 +67,14 @@ define service {
     check_command snmp_users!public!10!20
 }
 
+{% if hostvars[host]['monitor_openmanage']|default(False) %}
+define service {
+    use generic-service
+    host_name {{ host }}
+    service_description Dell OpenManage
+    check_command check_openmanage!{{ hostvars[host]['check_openmanage_blacklist']|default('dummy_string') }}
+}
+{% endif %}
 {% if host == 'cvalspar1b' or host == 'cvalspar1d' %}
 define service {
     use generic-service

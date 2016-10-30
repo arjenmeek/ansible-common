@@ -22,6 +22,10 @@
   copy: src=snmp_mem.cfg dest=/etc/nagios-plugins/config/snmp_mem.cfg
   notify: restart_nagios
 
+- name: configure nagios check_openmanage plugin (SNMP)
+  copy: src=snmp_check_openmanage.cfg dest=/etc/nagios-plugins/config/snmp_check_openmanage.cfg
+  notify: restart_nagios
+
 - name: delete some default nagios conf.d files
   file: path=/etc/nagios3/conf.d/{{ item }} state=absent
   with_items: "{{ nagios_delete_conffiles }}"

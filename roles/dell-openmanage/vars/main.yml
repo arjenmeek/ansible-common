@@ -1,0 +1,17 @@
+---
+packages:
+  - srvadmin-deng
+  - srvadmin-deng-snmp
+  - srvadmin-hapi
+  - srvadmin-omacore
+  - srvadmin-omacs
+  - srvadmin-omcommon
+  - srvadmin-omilcore
+  - srvadmin-oslog
+  - srvadmin-smcommon
+  - srvadmin-smweb
+  - srvadmin-storage-cli
+  - srvadmin-storage-snmp
+  - srvadmin-storage
+  - srvadmin-storelib
+  - srvadmin-storelib-sysfs

@@ -1,0 +1,11 @@
+---
+- name: add Dell apt key
+  apt_key: keyserver=pool.sks-keyservers.net id=1285491434D8786F state=present
+
+- name: add Dell apt sources
+  apt_repository: repo='deb http://linux.dell.com/repo/community/ubuntu jessie openmanage' state=present
+
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+  notify: restart_dataeng
