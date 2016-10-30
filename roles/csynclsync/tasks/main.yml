@@ -17,6 +17,6 @@
   template: src=csync2.cfg.j2 dest=/etc/csync2.cfg
 
 - name: Copy csync2 preshared key
-  copy: src=./secure/groups/{{ csync2_hostgroup }}/csync2_key dest=/etc/csync2.key_{{ csync2_hostgroup }} mode=0600
+  copy: src=./secure/groups/{{ mirror_hostgroup }}/csync2_key dest=/etc/csync2.key_{{ mirror_hostgroup }} mode=0600
   tags:
     - secure_files

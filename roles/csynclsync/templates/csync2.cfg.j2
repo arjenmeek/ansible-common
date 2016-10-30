@@ -1,10 +1,10 @@
 nossl * *;
 
-group {{ csync2_hostgroup }}
+group {{ mirror_hostgroup }}
 {
-        host{% for host in groups[csync2_hostgroup] %} {{ host }}{% endfor %};
+        host{% for host in groups[mirror_hostgroup] %} {{ host }}{% endfor %};
 
-        key /etc/csync2.key_{{ csync2_hostgroup }};
+        key /etc/csync2.key_{{ mirror_hostgroup }};
 
 {% for tree in csync2_shared_trees %}
         include {{ tree }};
