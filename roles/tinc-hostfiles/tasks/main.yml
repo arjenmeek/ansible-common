@@ -1,0 +1,16 @@
+---
+# Generate private & public RSA keys to be used with tinc
+
+- name: Generate RSA private keys
+  command: openssl genrsa -out ./secure/hosts/{{ item }}/tinc_private.pem 4096 creates="./secure/hosts/{{ item }}/tinc_private.pem"
+  with_items:
+    - "{{ groups.vpnservers }}"
+  tags:
+    - secure_files
+
+- name: Generate RSA public keys
+  command: openssl rsa -in ./secure/hosts/{{ item }}/tinc_private.pem -RSAPublicKey_out -out ./files/hosts/{{ item }}/tinc_public.pem creates="./files/hosts/{{ item }}/tinc_public.pem"
+  with_items:
+    - "{{ groups.vpnservers }}"
+  tags:
+    - secure_files
