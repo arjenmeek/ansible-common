@@ -1,0 +1,5 @@
+Name = {{ inventory_hostname }}
+Device = /dev/net/tun
+{% if tinc_connect_hosts|default([]) %}
+ConnectTo ={% for host in tinc_connect_hosts %} {{ host }}{% endfor %}
+{% endif %}

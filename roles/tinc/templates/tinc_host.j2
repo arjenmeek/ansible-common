@@ -1,0 +1,9 @@
+{% if hostvars[item]['public_ip'] is defined %}
+Address {{ hostvars[item]['public_ip'] }}
+{% endif %}
+Subnet {{ hostvars[item]['tinc_subnet'] }}
+{% if hostvars[item]['tinc_prio_subnet'] is defined %}
+Subnet {{ hostvars[item]['tinc_prio_subnet'] }}#5
+{% endif %}
+
+{{ lookup('file', './files/hosts/' ~ item ~'/tinc_public.pem')|replace('-----BEGIN PUBLIC KEY-----', '-----BEGIN RSA PUBLIC KEY-----')|replace('-----END PUBLIC KEY-----', '-----END RSA PUBLIC KEY-----') }}

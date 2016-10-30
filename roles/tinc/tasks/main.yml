@@ -1,0 +1,29 @@
+---
+- name: install packages
+  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  with_items: "{{ packages }}"
+  notify: restart_tinc
+
+- name: create tinc network config directories
+  file: dest=/etc/tinc/{{ tinc_network_name }}/hosts state=directory
+
+- name: create main tinc config
+  template: src=tinc.conf.j2 dest=/etc/tinc/{{ tinc_network_name }}/tinc.conf
+  notify: restart_tinc
+
+- name: create tinc-up script
+  template: src=tinc-up.j2 dest=/etc/tinc/{{ tinc_network_name }}/tinc-up mode=0755
+  notify: restart_tinc
+
+- name: copy tinc private key
+  template: src=rsa_key.priv.j2 dest=/etc/tinc/{{ tinc_network_name }}/rsa_key.priv mode=0600
+  notify: restart_tinc
+
+- name: configure tinc hosts
+  template: src=tinc_host.j2 dest=/etc/tinc/{{ tinc_network_name }}/hosts/{{ item }}
+  with_items: "{{ groups.vpnservers }}"
+  notify: restart_tinc
+
+- name: configure tinc networks list
+  template: src=nets.boot.j2 dest=/etc/tinc/nets.boot
+  notify: restart_tinc
