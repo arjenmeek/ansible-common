@@ -1,13 +1,20 @@
 ---
-- name: create /etc/resolv.conf
-  template: src=resolv.conf.j2 dest=/etc/resolv.conf
+- name: install packages
+  apt:
+    name: "{{ package }}"
+    state: present
+    update_cache: no
+    install_recommends: no
+  with_items: "{{ packages }}"
+  loop_control:
+    loop_var: package
 
-- name: create /etc/hosts
-  template: src=hosts.j2 dest=/etc/hosts
+- name: set hostname
+  copy:
+    content: "{{ inventory_hostname }}\n"
+    dest: "/etc/hostname"
 
 - name: create /var/log/journal for persistent systemd journal (takes effect after reboot)
-  file: dest=/var/log/journal state=directory
-
-- name: install packages
-  apt: name={{ item }} state=present update_cache=yes install_recommends=no
-  with_items: "{{ packages }}"
+  file:
+    dest: /var/log/journal
+    state: directory

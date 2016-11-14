@@ -1,0 +1,4 @@
+---
+- name: delegated update grub
+  command: chroot "{{ delegate_path }}" update-grub
+  delegate_to: "{{ delegate_host }}"

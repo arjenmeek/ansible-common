@@ -5,6 +5,5 @@ packages:
   - less
   - libpam-systemd
   - locales
-  - openssh-server
   - rsync
   - vim

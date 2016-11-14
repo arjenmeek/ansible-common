@@ -1,0 +1,17 @@
+---
+- name: set hostname
+  copy:
+    content: "{{ inventory_hostname }}\n"
+    dest: "{{ delegate_path }}/etc/hostname"
+  delegate_to: "{{ delegate_host }}"
+
+- name: configure GRUB boot loader
+  lineinfile:
+    dest: "{{ delegate_path }}/etc/default/grub"
+    regexp: "^GRUB_CMDLINE_LINUX_DEFAULT="
+    line: "GRUB_CMDLINE_LINUX_DEFAULT=\"quiet console=ttyS0 net.ifnames=0\""
+  delegate_to: "{{ delegate_host }}"
+  notify: "delegated update grub"
+
+- name: Flush handlers (workaround b/c handlers appear to be play scoped, not role scoped)
+  meta: flush_handlers
