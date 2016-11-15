@@ -3,6 +3,6 @@
 {% if interface.address is defined %}
     {{- interface.address -}}
 {% else %}
-    {{- networks[interface.network].prefix + hostvars[host].ipnum|string -}}
+    {{- networks[interface.network].network|ipaddr(hostvars[host].ipnum + hostvars[host].ipoffset|default(0) )|ipaddr('address') -}}
 {% endif %}
 {% endmacro %}
