@@ -1,30 +1,38 @@
-# {{ ansible_managed }}
+#jinja2: lstrip_blocks: True, trim_blocks: True
 {% from "./roles/common/macros/interfaces.j2" import gateway, bridge_ports, extra_ips, source_routing, routes, ipv6, interface_address with context %}
 
 auto lo
 iface lo inet loopback
 {% for interface in interfaces %}
-{% if interface.ignore is not defined or not interface.ignore %}
+    {% if interface.ignore is not defined or not interface.ignore %}
+        {% if interface.prefix is defined %}
+            {% set prefix = interface.prefix %}
+        {% elif interface.network is defined and networks[interface.network].network is defined %}
+            {% set prefix = networks[interface.network].network|ipsubnet|ipaddr('prefix') %}
+        {% else %}
+            {% set prefix = 32 %}
+        {% endif %}
+	{% set address = interface_address(interface, inventory_hostname, prefix) %}
 
 auto {{ interface.name }}
-{% if (interface.address is defined or interface.network is defined) and not (interface.address is defined and not interface.address) %}
+        {% if (interface.address is defined or interface.network is defined) and not (interface.address is defined and not interface.address) %}
 iface {{ interface.name }} inet static
-    address {{ interface_address(interface, inventory_hostname) -}}
-{% else %}
+    address {{ interface_address(interface, inventory_hostname, prefix) -}}
+        {% else %}
 iface {{ interface.name }} inet manual
-{% if interface.address is defined and not interface.address %}
+            {% if interface.address is defined and not interface.address %}
     pre-up ip link set {{ interface.name }} up
     post-down ip link set {{ interface.name }} down
-{% endif %}
-{% endif %}
-{{ gateway(interface, inventory_hostname) -}}
-{% if interface.proxy_arp|default(False) %}
+            {% endif %}
+        {% endif %}
+{{ gateway(interface, inventory_hostname, prefix) -}}
+        {% if interface.proxy_arp|default(False) %}
     up echo 1 >/proc/sys/net/ipv4/conf/{{ interface.name }}/proxy_arp
-{% endif %}
+        {% endif %}
 {{ bridge_ports(interface) -}}
 {{ extra_ips(interface) -}}
 {{ source_routing(interface) -}}
-{{ routes(interface) -}}
+{{ routes(interface, address) -}}
 {{ ipv6(interface) -}}
-{% endif %}
+    {% endif %}
 {% endfor %}

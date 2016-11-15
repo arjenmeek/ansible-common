@@ -1,0 +1,12 @@
+---
+- name: configure network interfaces
+  template:
+    src: "interfaces.j2"
+    dest: "{{ delegate_path }}/etc/network/interfaces"
+  delegate_to: "{{ delegate_host }}"
+
+- name: configure /etc/hosts
+  template:
+    src: "hosts.j2"
+    dest: "{{ delegate_path }}/etc/hosts"
+  delegate_to: "{{ delegate_host }}"

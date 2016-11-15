@@ -1,5 +1,16 @@
 ---
-- name: configure network interfaces
-  template: src=interfaces.j2 dest=/etc/network/interfaces
+- name: create /etc/resolv.conf
+  template:
+    src: "resolv.conf.j2"
+    dest: "/etc/resolv.conf"
+  delegate_to: "{{ inventory_hostname }}"
 
-# TODO: Automatically reload networking config
+- name: configure network interfaces
+  template:
+    src: "interfaces.j2"
+    dest: "/etc/network/interfaces"
+
+- name: configure /etc/hosts
+  template:
+    src: "hosts.j2"
+    dest: "/etc/hosts"
