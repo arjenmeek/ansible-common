@@ -1,6 +1,8 @@
 ---
 - name: Configure apt sources
   template: src=sources.list.j2 dest=/etc/apt/sources.list
-#  notify:
-#    - update_apt_sources
-#  ^ commented out since the 'essential' role in the same play already forces an update
+  notify:
+    - update_apt_sources
+
+- name: flush handlers (workaround because handlers appear to be play scoped, not role scoped)
+  meta: flush_handlers

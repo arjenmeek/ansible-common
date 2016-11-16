@@ -1,4 +1,3 @@
-# {{ ansible_managed }}
 {% set mirror_url = 'http://' + apt_cache|default('') + debian_mirror %}
 {% set security_url = 'http://' + apt_cache|default('') + debian_security %}
 {% set release = debian_release|default(default_debian_release) %}
