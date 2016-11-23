@@ -21,10 +21,10 @@ expire-rule:
 
 Runall:
 {% for host in groups[backup_hostgroup]|sort %}
-    {{ host }}-root
+    {{ host }}
 {% for vol in hostvars[host].extra_volumes|default([]) %}
 {% if vol.backup_exclude is not defined or not vol.backup_exclude %}
-    {{ host }}-{{ vol.name }}
+    {{ host }}_{{ vol.name }}
 {% endif %}
 {% endfor %}
 {% endfor %}
