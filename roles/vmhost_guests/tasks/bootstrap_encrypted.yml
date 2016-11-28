@@ -7,21 +7,27 @@
   file: path={{ vm_mountpoint }} state=directory
 
 - name: create root LV
-  lvol: vg={{ vg }} lv={{ vm_name }} size={{ hostvars[vm_name]['disksize'] }}
+  lvol: vg={{ vg }} lv="{{ vm_name }}_encrypted" size={{ hostvars[vm_name]['disksize'] }}
 
-- name: format root LV
-  filesystem: fstype=ext4 dev=/dev/{{ inventory_hostname }}/{{ vm_name }}
+- name: format root LUKS volume
+  command: cryptsetup -v --batch-mode --cipher aes-xts-plain64 --key-size 256 --hash sha256 --iter-time 2000 --use-urandom --key-file=/srv/secure/keys/{{ vm_name }}.key luksFormat /dev/{{ inventory_hostname }}/{{ vm_name }}_encrypted
 
-- name: mount root LV
-  command: mount /dev/{{ inventory_hostname }}/{{ vm_name }} {{ vm_mountpoint }}
+- name: open root LUKS volume
+  command: cryptsetup -v --batch-mode --key-file=/srv/secure/keys/{{ vm_name }}.key luksOpen /dev/{{ inventory_hostname }}/{{ vm_name }}_encrypted {{ vm_name }}
 
-- name: create extra LVs
-  lvol: vg={{ item['vg']|default(inventory_hostname) }} lv="{{ vm_name + '_' + item['name'] }}" size={{ item['size'] }}
-  with_items: "{{ hostvars[vm_name]['extra_volumes']|default([]) }}"
+- name: format root filesystem
+  filesystem: fstype=ext4 dev=/dev/mapper/{{ vm_name }}
 
-- name: format extra LVs
-  filesystem: fstype=ext4 dev="/dev/{{ item['vg']|default(inventory_hostname) }}/{{ vm_name }}_{{ item.name }}"
-  with_items: "{{ hostvars[vm_name]['extra_volumes']|default([]) }}"
+- name: mount root filesystem
+  command: mount /dev/mapper/{{ vm_name }} {{ vm_mountpoint }}
+
+#- name: create extra LVs
+#  lvol: vg={{ item['vg']|default(inventory_hostname) }} lv="{{ vm_name + '_' + item['name'] }}" size={{ item['size'] }}
+#  with_items: "{{ hostvars[vm_name]['extra_volumes']|default([]) }}"
+
+#- name: format extra LVs
+#  filesystem: fstype=ext4 dev="/dev/{{ item['vg']|default(inventory_hostname) }}/{{ vm_name }}_{{ item.name }}"
+#  with_items: "{{ hostvars[vm_name]['extra_volumes']|default([]) }}"
 
 # TODO: Mount & unmount extra volumes
 

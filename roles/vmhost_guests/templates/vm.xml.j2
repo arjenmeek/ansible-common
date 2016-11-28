@@ -28,22 +28,33 @@
     <emulator>/usr/bin/kvm</emulator>
     <disk type="block" device="disk">
       <driver name="qemu" type="raw" cache="none" io="native"/>
+{% if hostinfo.encrypted_root|default(False) %}
+      <source dev="/dev/mapper/{{ hostname }}"/>
+{% else %}
       <source dev="/dev/{{ inventory_hostname }}/{{ hostname }}"/>
+{% endif %}
       <target dev="vda" bus="virtio"/>
     </disk>
 {% if hostinfo.extra_volumes is defined %}
 {% for volume in hostinfo.extra_volumes %}
     <disk type="block" device="disk">
       <driver name="qemu" type="raw" cache="none" io="native"/>
+{% if volume.encrypted|default(False) %}
+      <source dev="/dev/mapper/{{ volume.lv|default(hostname + '_' + volume.name) }}" />
+{% else %}
       <source dev="/dev/{{ volume.vg|default(inventory_hostname) }}/{{ volume.lv|default(hostname + '_' + volume.name) }}" />
+{% endif %}
       <target dev="{{ volume.device }}" bus="virtio"/>
     </disk>
 {% endfor %}
 {% endif %}
 {% for interface in hostinfo.interfaces %}
     <interface type="bridge">
-      <source bridge="{{ networks[interface.network].bridge }}"/>
-      <model type="virtio" />
+{% if interface.mac is defined %}
+      <mac address="{{ interface.mac }}"/>
+{% endif %}
+      <source bridge="{{ network_bridges[interface.network] }}"/>
+      <model type="virtio"/>
     </interface>
 {% endfor %}
     <input type="mouse" bus="ps2"/>
