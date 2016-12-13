@@ -1,0 +1,11 @@
+---
+- name: configure fstab
+  mount:
+    src: "/dev/{{ volume.device }}{{ volume.partition|default('') }}"
+    name: "{{ volume.mountpoint }}"
+    fstype: ext4
+    opts: defaults
+    state: mounted
+  with_items: "{{ volumes }}"
+  loop_control:
+    loop_var: volume

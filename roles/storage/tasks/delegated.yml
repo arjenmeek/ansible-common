@@ -1,0 +1,10 @@
+---
+- name: Set up root mount
+  mount:
+    src: /dev/vda1
+    name: /
+    fstype: ext4
+    opts: defaults
+    state: present
+    fstab: "{{ delegate_path }}/etc/fstab"
+  delegate_to: "{{ delegate_host }}"
