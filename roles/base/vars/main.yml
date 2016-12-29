@@ -1,15 +1,14 @@
 ---
 packages:
-  - acpid
   - bc
   - bind9-host
   - bwm-ng
   - cron
   - dbus
+  - dialog
   - dnsutils
   - git
   - htop
-  - imagemagick
   - iotop
   - makepasswd
   - man-db

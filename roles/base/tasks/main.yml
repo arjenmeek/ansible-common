@@ -1,7 +1,10 @@
 ---
 - name: install packages
-  apt: name={{ item }} state=present update_cache=no install_recommends=no
+  apt:
+    name: "{{ package }}"
+    state: present
+    update_cache: no
+    install_recommends: no
   with_items: "{{ packages }}"
-
-- name: set root's .bashrc
-  template: src=bashrc.j2 dest=/root/.bashrc
+  loop_control:
+    loop_var: package
