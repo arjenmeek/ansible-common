@@ -1,0 +1,17 @@
+---
+- name: set root password
+  lineinfile:
+    dest: "{{ delegate_path }}/etc/shadow"
+    regexp: "^root:"
+    line: "root:{{ root_password }}:16819:0:99999:7:::"
+  delegate_to: "{{ delegate_host }}"
+
+- name: deploy SSH authorized keys for root user
+  authorized_key:
+    user: root
+    key: "{{ authorized_key }}"
+    path: "{{ delegate_path }}/root/.ssh/authorized_keys"
+  with_items: "{{ root_authorized_keys }}"
+  loop_control:
+    loop_var: authorized_key
+  delegate_to: "{{ delegate_host }}"

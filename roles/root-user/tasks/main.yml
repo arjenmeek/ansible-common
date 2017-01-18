@@ -1,0 +1,9 @@
+---
+- name: set root password
+  lineinfile:
+    dest: "/etc/shadow"
+    regexp: "^root:"
+    line: "root:{{ root_password }}:16819:0:99999:7:::"
+
+- name: set root's .bashrc
+  template: src=bashrc.j2 dest=/root/.bashrc
