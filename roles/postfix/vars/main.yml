@@ -1,0 +1,6 @@
+---
+packages:
+  - opendkim
+  - opendkim-tools
+  - postfix
+  - bsd-mailx

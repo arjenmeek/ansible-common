@@ -1,15 +1,13 @@
 ---
 - name: install packages
   apt: name={{ item }} state=present update_cache=no install_recommends=no
-  with_items:
-    - postfix
-    - bsd-mailx
+  with_items: "{{ packages }}"
 
 #- name: configure postfix
 #  template: src=main.cf.j2 dest=/etc/postfix/main.cf
 #  notify: restart_postfix
 
-#- name: set mailname
-#  copy: content="{{ mailname }}\n" dest=/etc/mailname
-#  notify: restart_postfix
-#  when: postfix_master
+- name: set mailname
+  copy: content="{{ mailname }}\n" dest=/etc/mailname
+  notify: restart_postfix
+  when: postfix_master
