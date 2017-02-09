@@ -1,0 +1,37 @@
+{% for host in groups.servers %}
+{% set hv = hostvars[host] %}
+{% if 'network' in hv and 'ipnum' in hv %}
+{% set host_ip = hv['network']|ipaddr(hv['ipnum'])|ipaddr('address') %}
+{% elif 'real_host' in hv %}
+{% set host_ip = hv['real_host'] %}
+{% else %}
+{% set host_ip = host %}
+{% endif %}
+Match host {{ host }} user root
+    Port {{ hv['ssh_port']|default('22') }}
+    Hostname {{ host_ip }}
+{% if 'gateway' in hv %}
+    ProxyCommand ssh -W %h:%p -q {{ hv['gateway'] }}
+{% endif %}
+{% if 'identity_file' in hv %}
+    IdentityFile ~/.ssh/id_{{ hv['identity_file'] }}
+{% endif %}
+
+Match host {{ host }} user {{ username }}
+    Port {{ hv['ssh_port']|default('22') }}
+    Hostname {{ host_ip }}
+{% if 'gateway' in hv %}
+    ProxyCommand ssh -W %h:%p -q {{ hv['gateway'] }}
+{% endif %}
+{% if 'user_identity_file' in hv %}
+    IdentityFile ~/.ssh/id_{{ hv['user_identity_file'] }}
+{% endif %}
+
+Host {{ host }}
+    Port {{ hv['ssh_port']|default('22') }}
+    Hostname {{ host_ip }}
+{% if 'gateway' in hv %}
+    ProxyCommand ssh -W %h:%p -q {{ hv['gateway'] }}
+{% endif %}
+
+{% endfor %}

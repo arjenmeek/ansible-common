@@ -1,0 +1,4 @@
+---
+- name: Generate local ssh_config
+  template: src=ssh_config.j2 dest=./generated/ssh_config
+  notify: update user ssh config

@@ -1,0 +1,3 @@
+---
+- name: update user ssh config
+  command: ./local/update_ssh_config
