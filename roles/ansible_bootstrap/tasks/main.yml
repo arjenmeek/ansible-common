@@ -1,0 +1,38 @@
+---
+- name: create ansible group
+  group:
+    name: ansible
+    gid: 999
+    state: present
+
+- name: configure ansible user
+  user:
+    name: ansible
+    comment: "Ansible"
+    uid: 999
+    group: ansible
+    groups: adm,staff,sudo
+    state: present
+
+- name: deploy SSH authorized keys for ansible user
+  authorized_key:
+    user: ansible
+    key: "{{ lookup('file', './files/ssh_keys/{{ ssh_key }}.pub') }}"
+  with_items: "{{ ansible_ssh_keys }}"
+  loop_control:
+    loop_var: ssh_key
+
+- name: install sudo
+  apt:
+    name: "sudo"
+    state: present
+    update_cache: no
+    install_recommends: no
+
+- name: allow ansible user to become root without password
+  lineinfile:
+    dest: /etc/sudoers
+    regexp: '^ansible '
+    line: 'ansible ALL=(ALL) NOPASSWD: ALL'
+    state: present
+    validate: 'visudo -cf %s'
