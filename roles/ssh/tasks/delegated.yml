@@ -1,0 +1,21 @@
+---
+- name: configure sshd
+  template:
+    src: "sshd_config.j2"
+    dest: "{{ delegate_path }}/etc/ssh/sshd_config"
+  delegate_to: "{{ delegate_host }}"
+
+- name: copy private host keys
+  copy:
+    src: "./secure/hosts/{{ inventory_hostname }}/ssh_host_{{ item }}_key"
+    dest: "{{ delegate_path }}/etc/ssh/ssh_host_{{ item }}_key"
+    mode: "0600"
+  with_items: "{{ ssh_host_key_types }}"
+  delegate_to: "{{ delegate_host }}"
+
+- name: copy public host keys
+  copy:
+    src: "./files/hosts/{{ inventory_hostname }}/ssh_host_{{ item }}_key.pub"
+    dest: "/etc/ssh/ssh_host_{{ item }}_key.pub"
+  with_items: "{{ ssh_host_key_types }}"
+  delegate_to: "{{ delegate_host }}"
