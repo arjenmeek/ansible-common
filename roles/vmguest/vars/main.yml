@@ -1,0 +1,6 @@
+---
+
+special_volumes:
+  - mountpoint: /dev
+  - mountpoint: /proc
+  - mountpoint: /sys

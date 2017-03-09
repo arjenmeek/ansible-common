@@ -1,0 +1,50 @@
+<domain type="kvm">
+  <name>{{ inventory_hostname }}</name>
+  <uuid>{{ lookup('file', './files/hosts/' ~ inventory_hostname ~'/vm_uuid') }}</uuid>
+  <memory>{{ memory * 1024 }}</memory>
+  <currentMemory>{{ memory * 1024 }}</currentMemory>
+  <vcpu>{{ cores }}</vcpu>
+  <os>
+    <type arch="x86_64">hvm</type>
+    <boot dev="hd"/>
+  </os>
+  <features>
+    <acpi/>
+    <apic/>
+    <pae/>
+  </features>
+  <cpu mode="host-model" />
+  <clock offset="utc">
+    <timer name="rtc" tickpolicy="catchup"/>
+    <timer name="pit" tickpolicy="delay"/>
+    <timer name="hpet" present="no"/>
+  </clock>
+  <on_poweroff>destroy</on_poweroff>
+  <on_reboot>restart</on_reboot>
+  <on_crash>restart</on_crash>
+  <devices>
+    <emulator>/usr/bin/kvm</emulator>
+{% for volume in volumes %}
+    <disk type="block" device="disk">
+      <driver name="qemu" type="raw" cache="none" io="native"/>
+      <source dev="/dev/mapper/{{ parent }}-{{ inventory_hostname }}_{{ volume.name }}" />
+      <target dev="{{ volume.device }}" bus="virtio"/>
+    </disk>
+{% endfor %}
+{% for interface in interfaces %}
+    <interface type="bridge">
+{% if interface.mac is defined %}
+      <mac address="{{ interface.mac }}"/>
+{% endif %}
+      <source bridge="{{ hostvars[parent].network_bridges[interface.network] }}"/>
+      <model type="virtio"/>
+    </interface>
+{% endfor %}
+    <input type="mouse" bus="ps2"/>
+    <graphics type="vnc" port="-1"/>
+    <console type="pty"/>
+    <video>
+      <model type="cirrus"/>
+    </video>
+  </devices>
+</domain>

@@ -1,0 +1,34 @@
+---
+- name: "create LV"
+  lvol:
+    vg: "{{ parent }}"
+    lv: "{{ inventory_hostname }}_{{ volume.name }}"
+    size: "{{ volume.size }}"
+  delegate_to: "{{ parent }}"
+
+- name: "partition device"
+  shell: "echo '2048;' | sfdisk --quiet --unit S --no-reread '{{ lv_base_path }}_{{ volume.name }}'"
+  when: volume.partition is defined
+  delegate_to: "{{ parent }}"
+
+- name: "enable partition mappings"
+  command: "kpartx -a {{ lv_base_path }}_{{ volume.name }}"
+  when: volume.partition is defined
+  delegate_to: "{{ parent }}"
+
+- name: "format partition"
+  filesystem:
+    fstype: ext4
+    dev: "{{ lv_base_path  }}_{{ volume.name }}{{ volume.partition|default('') }}"
+    force: True
+  delegate_to: "{{ parent }}"
+
+- name: "create mountpoint"
+  file:
+    path: "{{ vm_mountpoint }}{{ volume.mountpoint }}"
+    state: directory
+  delegate_to: "{{ parent }}"
+
+- name: mount filesystem
+  command: mount "{{ lv_base_path }}_{{ volume.name }}{{ volume.partition|default('') }}" "{{ vm_mountpoint }}{{ volume.mountpoint }}"
+  delegate_to: "{{ parent }}"

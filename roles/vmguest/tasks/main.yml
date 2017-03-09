@@ -1,0 +1,16 @@
+---
+- name: configure VM in libvirt on the parent
+  template:
+    src: "vm.xml.j2"
+    dest: "/etc/libvirt/qemu/{{ inventory_hostname }}.xml"
+  delegate_to: "{{ parent }}"
+
+- name: check if plain logical volume already exists
+  stat:
+    path: "/dev/{{ parent }}/{{ inventory_hostname }}_root"
+  delegate_to: "{{ parent }}"
+  register: plain_volume_status
+
+- name: bootstrap VM
+  include: bootstrap.yml
+  when: not plain_volume_status.stat.exists

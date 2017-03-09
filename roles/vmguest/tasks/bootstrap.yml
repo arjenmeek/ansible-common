@@ -1,0 +1,111 @@
+---
+- name: "define LV base path"
+  set_fact:
+    lv_base_path: "/dev/mapper/{{ parent }}-{{ inventory_hostname }}"
+  delegate_to: "{{ parent }}"
+
+- name: "define VM mountpoint"
+  set_fact:
+    vm_mountpoint: "/tmp/mount.{{ inventory_hostname }}"
+  delegate_to: "{{ parent }}"
+
+- name: "prepare volumes"
+  include: prepare_volume.yml
+  with_items: "{{ volumes }}"
+  loop_control:
+    loop_var: volume
+
+- name: "create mountpoints"
+  file:
+    path: "{{ vm_mountpoint }}{{ volume.mountpoint }}"
+    state: directory
+  with_items: "{{ special_volumes }}"
+  loop_control:
+    loop_var: volume
+  delegate_to: "{{ parent }}"
+
+- name: temporarily mount special filesystems inside VM filetree
+  command: "mount {{ mountspec }}"
+  with_items:
+    - "--bind /dev {{ vm_mountpoint }}/dev"
+    - "-t proc none {{ vm_mountpoint }}/proc"
+    - "-t sysfs none {{ vm_mountpoint }}/sys"
+  loop_control:
+    loop_var: mountspec
+  delegate_to: "{{ parent }}"
+
+- name: use debootstrap to install Debian
+  command: "debootstrap --variant=minbase --include='ifupdown openssh-server python python-apt sudo systemd-sysv dbus linux-image-amd64 grub-pc' '{{ debian_release }}' '{{ vm_mountpoint }}' '{{ debian_mirror }}'"
+  delegate_to: "{{ parent }}"
+
+- name: temporarily mount special filesystems inside VM filetree (again, since debootstrap unmounts them)
+  command: "mount {{ mountspec }}"
+  with_items:
+    - "-t proc none {{ vm_mountpoint }}/proc"
+    - "-t sysfs none {{ vm_mountpoint }}/sys"
+  loop_control:
+    loop_var: mountspec
+  delegate_to: "{{ parent }}"
+
+- name: install grub to main device
+  command: chroot "{{ vm_mountpoint }}" grub-install "{{ lv_base_path }}_{{ volumes[0].name }}"
+  delegate_to: "{{ parent }}"
+
+- name: perform VM networking config
+  include_role:
+    name: base
+    tasks_from: delegated
+  vars:
+    delegate_host: "{{ parent }}"
+    delegate_path: "{{ vm_mountpoint }}"
+
+- name: perform VM base config
+  include_role:
+    name: base
+    tasks_from: delegated
+  vars:
+    delegate_host: "{{ parent }}"
+    delegate_path: "{{ vm_mountpoint }}"
+
+- name: configure VM ssh
+  include_role:
+    name: ssh
+    tasks_from: delegated
+  vars:
+    delegate_host: "{{ parent }}"
+    delegate_path: "{{ vm_mountpoint }}"
+
+- name: unmount special filesystems inside VM filetree
+  command: "umount {{ vm_mountpoint }}{{ mountpoint }}"
+  with_items:
+    - "/sys"
+    - "/proc"
+    - "/dev"
+  loop_control:
+    loop_var: mountpoint
+  delegate_to: "{{ parent }}"
+
+- name: unmount volumes
+  command: "umount {{ vm_mountpoint }}{{ volume.mountpoint }}"
+  with_items: "{{ volumes[::-1] }}"
+  loop_control:
+    loop_var: volume
+  delegate_to: "{{ parent }}"
+
+- name: "disable partition mappings"
+  command: "kpartx -d {{ lv_base_path }}_{{ volume.name }}"
+  with_items: "{{ volumes[::1] }}"
+  when: volume.partition is defined
+  loop_control:
+    loop_var: volume
+  delegate_to: "{{ parent }}"
+
+- name: start VM through virsh
+  command: "virsh create /etc/libvirt/qemu/{{ inventory_hostname }}.xml"
+  delegate_to: "{{ parent }}"
+
+- name: wait for VM to start
+  wait_for:
+    port: 22
+    host: "{{ networks[interfaces[0].network].network|ipaddr(ipnum)|ipaddr('address') }}"
+  delegate_to: "{{ ssh_proxy|default('localhost') }}"
